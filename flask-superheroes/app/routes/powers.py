@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request
 from app import db
 from app.models import Power
 
-powers_bp = Blueprint('powers', __name__)
+# url_prefix
+powers_bp = Blueprint('powers', __name__, url_prefix='/')
 
 @powers_bp.route('/powers', methods=['GET'])
 def get_powers():
@@ -24,12 +25,14 @@ def update_power(id):
         return jsonify({'error': 'Power not found'}), 404
     
     data = request.get_json()
-    if not data or 'description' not in data:
+    if not data:
+        return jsonify({'errors': ['No data provided']}), 400
+    
+    if 'description' not in data:
         return jsonify({'errors': ['description is required']}), 400
     
     description = data.get('description')
     
-    # Validate description
     if not description or len(description) < 20:
         return jsonify({'errors': ['description must be at least 20 characters long']}), 400
     
@@ -39,4 +42,4 @@ def update_power(id):
         return jsonify(power.to_dict())
     except Exception as e:
         db.session.rollback()
-        return jsonify({'errors': [str(e)]}), 400
+        return jsonify({'errors': ['Validation error']}), 400

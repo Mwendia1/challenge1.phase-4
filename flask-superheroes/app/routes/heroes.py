@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify
 from app import db
 from app.models import Hero
 
-heroes_bp = Blueprint('heroes', __name__)
+#url_prefix
+heroes_bp = Blueprint('heroes', __name__, url_prefix='/')
 
 @heroes_bp.route('/heroes', methods=['GET'])
 def get_heroes():
